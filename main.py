@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import sys
 
 tareas = []
@@ -27,63 +28,74 @@ for tarea_id, duracion, categoria in tareas:
 =======
 from typing import List, Dict, Set, Tuple  # Tipos para mejorar claridad y estructura del código
 import sys  # Permite leer argumentos desde la terminal
+=======
+from typing import List, Dict, Set, Tuple  
+import sys  
+# Librerias para poder leer el codigo de buena manera
+>>>>>>> afed660 (Agrega comentarios explicativos al codigo final, cambios)
 
-tareas = []  # Lista donde se almacenarán las tareas leídas desde el archivo
-with open("tareas.txt") as f:  # Abre el archivo tareas.txt en modo lectura
-    for linea in f.readlines():  # Recorre cada línea del archivo
-        partes = linea.strip().split(",")  # Elimina saltos de línea y separa por comas
+tareas = []
+with open("tareas.txt") as f:
+    for linea in f.readlines():
+        partes = linea.strip().split(",")
         tareas.append((partes[0], int(partes[1]), partes[2]))  
-        # Guarda la tarea como tupla: (id, duración, categoría)
+# Guarda la tarea como tupla
 
-recursos = []  # Lista donde se almacenarán los recursos
-with open("recursos.txt") as f:  # Abre el archivo recursos.txt
-    for linea in f.readlines():  # Recorre cada línea
-        partes = linea.strip().split(",")  # Limpia y separa por comas
+recursos = []
+with open("recursos.txt") as f:
+    for linea in f.readlines():
+        partes = linea.strip().split(",")
         recursos.append((partes[0], set(partes[1:])))  
-        # Guarda el recurso como tupla: (id, conjunto de categorías que puede hacer)
+# Guarda el recurso como tupla
+
 
 tareas_ordenadas = sorted(tareas, key=lambda t: t[1], reverse=True)  
-# Ordena las tareas de mayor a menor duración (estrategia greedy)
+# Ordena tareas por duración (mayor a menor)
 
-tiempo_recurso = {}  # Diccionario que indica cuándo queda libre cada recurso
-for rid, cats in recursos:  # Recorre todos los recursos
-    tiempo_recurso[rid] = 0  # Inicializa todos los recursos como disponibles en tiempo 0
+tiempo_recurso = {}
+for rid, cats in recursos:
+    tiempo_recurso[rid] = 0  
+# Guarda cuándo queda libre cada recurso
 
-resultado = []  # Lista donde se guardará la planificación final
+resultado = []   
+# Lista donde se guardará la planificación final
 
-for tarea_id, duracion, categoria in tareas_ordenadas:  
-# Recorre cada tarea ya ordenada
 
-    mejor_recurso = None  # Guardará el recurso más adecuado
-    menor_tiempo = 999999  # Valor inicial grande para buscar el mínimo
+for tarea_id, duracion, categoria in tareas_ordenadas:
 
-    for rid, cats in recursos:  # Recorre todos los recursos
-        if categoria in cats:  # Verifica si el recurso puede realizar la tarea
-            if tiempo_recurso[rid] < menor_tiempo:  # Si este recurso queda libre antes
-                menor_tiempo = tiempo_recurso[rid]  # Actualiza el menor tiempo encontrado
-                mejor_recurso = rid  # Guarda este recurso como el mejor
+    mejor_recurso = None
+    menor_tiempo = 999999
 
-    inicio = tiempo_recurso[mejor_recurso]  # La tarea inicia cuando el recurso queda libre
-    fin = inicio + duracion  # El tiempo de término es inicio + duración
-    tiempo_recurso[mejor_recurso] = fin  # Actualiza cuándo el recurso vuelve a estar disponible
+    for rid, cats in recursos:
+        if categoria in cats:  
+# Verifica si el recurso puede realizar la tarea
+            if tiempo_recurso[rid] < menor_tiempo:
+                menor_tiempo = tiempo_recurso[rid]
+                mejor_recurso = rid  
+# Elegimos el recurso que queda libre antes
+
+    inicio = tiempo_recurso[mejor_recurso]  
+    fin = inicio + duracion
+    tiempo_recurso[mejor_recurso] = fin  
+# Actualiza cuándo el recurso vuelve a estar disponible
 
     resultado.append((tarea_id, mejor_recurso, inicio, fin))  
-    # Guarda la asignación: (tarea, recurso, inicio, fin)
+# Guarda asignación
 
-with open("output.txt", "w") as f:  # Abre el archivo de salida en modo escritura
-    for tarea_id, rid, inicio, fin in resultado:  # Recorre cada asignación
-        f.write(tarea_id + "," + rid + "," + str(inicio) + "," + str(fin) + "\n")  
-        # Escribe cada asignación en formato requerido (CSV)
 
-# ========================= DEFINICIÓN DE TIPOS =========================
+with open("output.txt", "w") as f:
+    for tarea_id, rid, inicio, fin in resultado:
+        f.write(f"{tarea_id},{rid},{inicio},{fin}\n")  
+# Ordenando el formato 
 
-Tarea = Tuple[str, int, str]  # (id, duración, categoría)
-Recurso = Tuple[str, Set[str]]  # (id, conjunto de categorías)
-Asignacion = Tuple[str, str, int, int]  # (tarea, recurso, inicio, fin)
 
-# ========================= FUNCIONES =========================
+Tarea = Tuple[str, int, str]
+Recurso = Tuple[str, Set[str]]
+Asignacion = Tuple[str, str, int, int]
+
 
 def leer_tareas(nombre_archivo: str) -> List[Tarea]:
+<<<<<<< HEAD
     tareas: List[Tarea] = []  # Lista tipada de tareas
 
     with open(nombre_archivo, "r") as archivo:  # Abre archivo
@@ -96,6 +108,14 @@ def leer_tareas(nombre_archivo: str) -> List[Tarea]:
 
     return tareas  # Retorna la lista de tareas
 >>>>>>> eec8332 (Agrega comentarios explicativos al codigo final)
+=======
+    tareas: List[Tarea] = []
+    with open(nombre_archivo, "r") as archivo:
+        for linea in archivo:
+            partes = linea.strip().split(",")
+            tareas.append((partes[0], int(partes[1]), partes[2]))
+    return tareas
+>>>>>>> afed660 (Agrega comentarios explicativos al codigo final, cambios)
 
     for rid, cats in recursos:
         if categoria in cats:
@@ -115,90 +135,84 @@ with open("output.txt", "w") as f:
       
 =======
 def leer_recursos(nombre_archivo: str) -> List[Recurso]:
-    recursos: List[Recurso] = []  # Lista tipada de recursos
-
-    with open(nombre_archivo, "r") as archivo:  # Abre archivo
-        for linea in archivo:  # Recorre líneas
-            partes = linea.strip().split(",")  # Limpia y separa
-            recurso_id = partes[0]  # ID del recurso
-            categorias = set(partes[1:])  # Categorías como conjunto
-            recursos.append((recurso_id, categorias))  # Guarda el recurso
-
-    return recursos  # Retorna lista de recursos
+    recursos: List[Recurso] = []
+    with open(nombre_archivo, "r") as archivo: # Abre el archivo
+        for linea in archivo:
+            partes = linea.strip().split(",")
+            recursos.append((partes[0], set(partes[1:])))
+    return recursos
 
 
 def planificar_tareas(tareas: List[Tarea], recursos: List[Recurso]) -> List[Asignacion]:
-    tareas_ordenadas = sorted(tareas, key=lambda tarea: tarea[1], reverse=True)  
-    # Ordena tareas por duración (greedy)
+    tareas_ordenadas = sorted(tareas, key=lambda tarea: tarea[1], reverse=True)
+# Ordena tareas por duración
+    tiempo_recurso: Dict[str, int] = {r: 0 for r, _ in recursos}
+# Inicializa disponibilidad de recursos
 
-    tiempo_recurso: Dict[str, int] = {}  # Diccionario de disponibilidad
-    for recurso_id, _ in recursos:
-        tiempo_recurso[recurso_id] = 0  # Inicializa todos en 0
-
-    resultado: List[Asignacion] = []  # Lista de asignaciones
+    resultado: List[Asignacion] = []
 
     for tarea_id, duracion, categoria in tareas_ordenadas:
-        mejor_recurso = None  # Mejor recurso encontrado
-        menor_tiempo = float("inf")  # Inicializa con infinito
+        mejor_recurso = None
+        menor_tiempo = float("inf")
 
         for recurso_id, categorias in recursos:
             if categoria in categorias and tiempo_recurso[recurso_id] < menor_tiempo:
-                # Si el recurso es compatible y queda libre antes
                 menor_tiempo = tiempo_recurso[recurso_id]
-                mejor_recurso = recurso_id
+                mejor_recurso = recurso_id  
+# Selecciona recurso disponible más temprano
 
         if mejor_recurso is None:
-            # Si no hay recurso compatible
-            raise ValueError(f"No existe recurso compatible para la tarea {tarea_id}")
+            raise ValueError("No hay recurso compatible")
 
-        inicio = tiempo_recurso[mejor_recurso]  # Inicio de la tarea
-        fin = inicio + duracion  # Fin de la tarea
-        tiempo_recurso[mejor_recurso] = fin  # Actualiza disponibilidad
+        inicio = tiempo_recurso[mejor_recurso]
+        fin = inicio + duracion
+        tiempo_recurso[mejor_recurso] = fin
 
-        resultado.append((tarea_id, mejor_recurso, inicio, fin))  
-        # Guarda asignación
+        resultado.append((tarea_id, mejor_recurso, inicio, fin))
 
-    return resultado  # Retorna planificación completa
+    return resultado
 
 
 def escribir_salida(nombre_archivo: str, resultado: List[Asignacion]) -> None:
-    with open(nombre_archivo, "w") as archivo:  # Abre archivo de salida
-        for tarea_id, recurso_id, inicio, fin in resultado:
-            archivo.write(f"{tarea_id},{recurso_id},{inicio},{fin}\n")  
-            # Escribe cada línea en formato requerido
+    with open(nombre_archivo, "w") as archivo:
+        for t, r, i, f in resultado:
+            archivo.write(f"{t},{r},{i},{f}\n")
+# Escribe cada línea en formato requerido
 
 
 def calcular_makespan(resultado: List[Asignacion]) -> int:
-    if not resultado:  # Si no hay tareas
-        return 0
-    return max(fin for _, _, _, fin in resultado)  
-    # Devuelve el mayor tiempo de finalización (makespan)
+    return max(fin for _, _, _, fin in resultado) if resultado else 0
+# Devuelve el mayor tiempo de finalización (makespan)
 
 
 def main() -> None:
-    if len(sys.argv) < 2:  # Verifica si se entregó argumento
-        print("Uso: python main.py <makespan_objetivo>")  # Mensaje de uso
+    if len(sys.argv) < 2:
+        print("Uso: python main.py <makespan_objetivo>")
         return
 
-    makespan_objetivo = int(sys.argv[1])  # Lee el argumento desde la terminal
+    makespan_objetivo = int(sys.argv[1])
 
-    tareas = leer_tareas("tareas.txt")  # Carga tareas desde archivo
-    recursos = leer_recursos("recursos.txt")  # Carga recursos
-    resultado = planificar_tareas(tareas, recursos)  # Genera planificación
-    escribir_salida("output.txt", resultado)  # Guarda resultado en archivo
+    tareas = leer_tareas("tareas.txt")
+    recursos = leer_recursos("recursos.txt")
+    resultado = planificar_tareas(tareas, recursos)
+    escribir_salida("output.txt", resultado)
 
-    makespan_obtenido = calcular_makespan(resultado)  # Calcula makespan final
+    makespan_obtenido = calcular_makespan(resultado)
 
-    print(f"Makespan objetivo: {makespan_objetivo}")  # Muestra objetivo
-    print(f"Makespan obtenido: {makespan_obtenido}")  # Muestra resultado
+    print(f"Makespan objetivo: {makespan_objetivo}")
+    print(f"Makespan obtenido: {makespan_obtenido}")
 
     if makespan_obtenido <= makespan_objetivo:
-        print("Se cumplió o mejoró el makespan objetivo.")  # Caso exitoso
+        print("Se cumplió el objetivo")
     else:
-        print("No se alcanzó el makespan objetivo, pero se generó una solución válida.")  
-        # Caso no óptimo pero válido
+        print("Solución válida pero no óptima")
 
 
+<<<<<<< HEAD
 if __name__ == "__main__":  # Punto de entrada del programa
     main()  # Ejecuta el programa principal
 >>>>>>> eec8332 (Agrega comentarios explicativos al codigo final)
+=======
+if __name__ == "__main__":
+    main()
+>>>>>>> afed660 (Agrega comentarios explicativos al codigo final, cambios)
