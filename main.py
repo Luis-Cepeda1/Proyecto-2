@@ -38,4 +38,3 @@ for tarea_id, duracion, categoria in tareas: # recorre cada tarea
 with open("output.txt", "w") as f: # guarda la asignación de la tarea
     for tarea_id, rid, inicio, fin in resultado: # recorre los resultados
       f.write(f"{tarea_id},{rid},{inicio},{fin}\n")  # escribe cada línea en formato requerido
-      
