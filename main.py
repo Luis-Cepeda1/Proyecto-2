@@ -1,5 +1,5 @@
-import sys
-import heapq
+import sys #leer datos desde la terminal
+import heapq # manejar prioridades (elegir el recurso más libre)
 
 tareas = []
 with open("tareas.txt", "r", encoding="utf-8") as archivo_tareas:
@@ -73,7 +73,6 @@ def asignar_tareas(tareas_ordenadas):
             tiempo, indice_recurso = heappop(heap_categoria)
             if tiempo == tiempo_libre[indice_recurso]:
                 break
-
         inicio = tiempo
         fin = inicio + duracion
         tiempo_libre[indice_recurso] = fin
@@ -81,38 +80,28 @@ def asignar_tareas(tareas_ordenadas):
 
         if fin > makespan:
             makespan = fin
-
         for otra_categoria in categorias_por_recurso[indice_recurso]:
             heappush(heaps[otra_categoria], (fin, indice_recurso))
-
     return asignaciones, makespan
-
 makespan_objetivo = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 
-criterios = [
-    sorted(tareas_convertidas, key=lambda t: t[1], reverse=True),
+criterios = [sorted(tareas_convertidas, key=lambda t: t[1], reverse=True),
     sorted(tareas_convertidas, key=lambda t: t[1]),
     sorted(tareas_convertidas, key=lambda t: (t[2], -t[1])),
     sorted(tareas_convertidas, key=lambda t: (-t[1], t[2])),
 ]
-
 mejor_asignacion = None
 mejor_makespan = 10**18
-
 for tareas_ordenadas in criterios:
     asignaciones, makespan = asignar_tareas(tareas_ordenadas)
-
     if makespan < mejor_makespan:
         mejor_makespan = makespan
         mejor_asignacion = asignaciones
-
     if mejor_makespan <= makespan_objetivo:
         break
-
 with open("output.txt", "w", encoding="utf-8") as salida:
-    salida.writelines(
-        f"{id_tarea},{ids_recursos[indice_recurso]},{inicio},{fin}\n"
-        for id_tarea, indice_recurso, inicio, fin in mejor_asignacion
-    )
+    salida.writelines(f"{id_tarea},{ids_recursos[indice_recurso]},{inicio},{fin}\n"
+        for id_tarea, indice_recurso, inicio, fin in mejor_asignacion)
+
 
 print("Makespan obtenido:", mejor_makespan)
