@@ -1,40 +1,74 @@
-import sys # importa la librería para leer argumentos desde la terminal
+import sys
+import heapq
 
-tareas = [] # lista donde se guardarán las tareas
-with open("tareas.txt") as f: # abre el archivo de tareas
-    for linea in f.readlines(): # recorre cada línea del archivo
-        partes = linea.strip().split(",") # separa por comas (ID, duración, categoría)
-        tareas.append((partes[0], int(partes[1]), partes[2]))  # guarda la tarea como tupla
+tareas = []
+with open("tareas.txt") as f:
+    for linea in f.readlines():
+        partes = linea.strip().split(",")
+        tareas.append((partes[0], int(partes[1]), partes[2]))
 
-recursos = [] # lista donde se guardarán los recursos
-with open("recursos.txt") as f: # abre el archivo de recursos
-    for linea in f.readlines(): # recorre cada línea
-        partes = linea.strip().split(",") # separa por comas
-        recursos.append((partes[0], set(partes[1:]))) # guarda el recurso y sus categorías 
+recursos = []
+with open("recursos.txt") as f:
+    for linea in f.readlines():
+        partes = linea.strip().split(",")
+        recursos.append((partes[0], set(partes[1:])))
 
-tareas = sorted(tareas, key=lambda t: t[1], reverse=True) # ordena las tareas por duración de mayor a menor 
+def asignar(tareas_ordenadas):
+    cats_por_recurso = {}
+    heaps = {}
+    tiempo_libre = {}
 
-tiempo_libre = {}  # diccionario que guarda cuándo queda libre cada recurso
-for rid, cats in recursos: # recorre los recursos
-    tiempo_libre[rid] = 0 # inicialmente todos están libres en tiempo 0
+    for rid, cats in recursos:
+        tiempo_libre[rid] = 0
+        cats_por_recurso[rid] = cats
+        for cat in cats:
+            if cat not in heaps:
+                heaps[cat] = []
+            heapq.heappush(heaps[cat], (0, rid))
 
-resultado = [] # lista donde se guardará la solución final
+    resultado = []
 
-for tarea_id, duracion, categoria in tareas: # recorre cada tarea
-    mejor_recurso = None # variable para guardar el mejor recurso encontrado
-    menor_tiempo = 999999 # inicializa con un número grande
+    for tarea_id, duracion, categoria in tareas_ordenadas:
+        while True:
+            tiempo, rid = heapq.heappop(heaps[categoria])
+            if tiempo == tiempo_libre[rid]:
+                break
 
-    for rid, cats in recursos:  # recorre todos los recursos
-        if categoria in cats: # verifica si el recurso puede hacer esa tarea
-            if tiempo_libre[rid] < menor_tiempo: # busca el recurso más disponible
-                menor_tiempo = tiempo_libre[rid]  # actualiza el menor tiempo encontrado
-                mejor_recurso = rid # guarda el mejor recurso
+        inicio = tiempo_libre[rid]
+        fin = inicio + duracion
+        tiempo_libre[rid] = fin
+        resultado.append((tarea_id, rid, inicio, fin))
 
-    inicio = tiempo_libre[mejor_recurso] # guarda el mejor recurso
-    fin = inicio + duracion # el fin es inicio + duración de la tarea
-    tiempo_libre[mejor_recurso] = fin # actualiza el tiempo en que el recurso queda libre
-    resultado.append((tarea_id, mejor_recurso, inicio, fin)) # guarda la asignación de la tarea
+        for cat in cats_por_recurso[rid]:
+            heapq.heappush(heaps[cat], (fin, rid))
 
-with open("output.txt", "w") as f: # guarda la asignación de la tarea
-    for tarea_id, rid, inicio, fin in resultado: # recorre los resultados
-      f.write(f"{tarea_id},{rid},{inicio},{fin}\n")  # escribe cada línea en formato requerido
+    return resultado
+
+makespan_objetivo = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+
+criterios = [
+    sorted(tareas, key=lambda t: t[1], reverse=True),
+    sorted(tareas, key=lambda t: t[1], reverse=False),
+    sorted(tareas, key=lambda t: (t[2], -t[1])),
+    sorted(tareas, key=lambda t: (-t[1], t[2])),
+]
+
+mejor_resultado = None
+mejor_makespan = 999999999
+
+for tareas_ordenadas in criterios:
+    resultado = asignar(tareas_ordenadas)
+    makespan = max(fin for _, _, _, fin in resultado)
+
+    if makespan < mejor_makespan:
+        mejor_makespan = makespan
+        mejor_resultado = resultado
+
+    if mejor_makespan <= makespan_objetivo:
+        break
+
+with open("output.txt", "w") as f:
+    for tarea_id, rid, inicio, fin in mejor_resultado:
+        f.write(f"{tarea_id},{rid},{inicio},{fin}\n")
+
+print("Makespan obtenido: " + str(mejor_makespan))
