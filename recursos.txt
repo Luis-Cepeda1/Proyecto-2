@@ -647,4 +647,8 @@ R646,CAT_52,CAT_50
 R647,CAT_27,CAT_93
 R648,CAT_96,CAT_141,CAT_44
 R649,CAT_119,CAT_89
+<<<<<<< HEAD
 R650,CAT_90
+=======
+R650,CAT_90
+>>>>>>> 1184ab4 (codigo con comentarios)
